@@ -9,7 +9,7 @@
   } from "@rnbo/js";
   import "./app.css";
   import type { IPatcher, IParameterDescription } from "@rnbo/js";
-  import patcher from "./../public/max/breakerR.export.json";
+  import patcher from "./breakerR.export.json";
   import Pad from "./lib/Pad.svelte";
   import { text } from "svelte/internal";
 
