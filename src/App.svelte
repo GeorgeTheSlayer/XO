@@ -10,8 +10,6 @@
   import "./app.css";
   import type { IPatcher, IParameterDescription } from "@rnbo/js";
   import patcher from "./breakerR.export.json";
-  import Pad from "./lib/Pad.svelte";
-  import { text } from "svelte/internal";
 
   let WAContext = window.AudioContext || window.webkitAudioContext;
   let context = new WAContext();
@@ -71,10 +69,12 @@
   };
 
   function changeParam(index: number) {
-    if (params[index].value == 2) {
-      params[index].value = 0;
-    } else {
-      params[index].value = params[index].value + 1;
+    if (isSetup) {
+      if (params[index].value == 2) {
+        params[index].value = 0;
+      } else {
+        params[index].value = params[index].value + 1;
+      }
     }
   }
 
@@ -100,35 +100,44 @@
 </script>
 
 <main class="font-sans text-center">
-  <h1 class=" font-bold text-7xl mt-8">X O</h1>
-  <p class="text-xl opacity-50">A simple drum machine</p>
-  {#await promise}
-    <p>loading...</p>
-  {:then}
-    <div class="square grid grid-cols-4 max-w-lg p-2 mx-auto gap-4 mt-4">
-      {#each params as pam, index}
-        <button
-          class="square font-bold text-4xl lg:text-7xl text-center p-4 hover:opacity-50 bg-slate-200"
-          on:click={() => changeParam(index)}
-        >
-          <span class={textColor[pam.value]}>{pamToDisp(pam.value)}</span
-          ></button
-        >
-      {/each}
-    </div>
-
-    <button class="text-white bg-black p-2 mt-2" on:click={startAudio}
-      >Start Audio</button
-    >
-    <div>
-      <input type="range" name="tempo" max="240" min="10" bind:value={tempo} />
-      <label for="tempo">Tempo {tempo}</label>
-    </div>
-    <div>
-      <input type="range" name="gainVal" max="100" min="0" bind:value={gain} />
-      <label for="gainVal">Gain: {gain}</label>
-    </div>
-  {:catch error}
-    <p>error: {error.message}</p>
-  {/await}
+  <body>
+    <h1 class=" font-bold text-7xl mt-8">X O</h1>
+    <p class="text-xl opacity-50">A simple drum machine</p>
+    {#if isSetup}
+      <div class="square grid grid-cols-4 max-w-lg p-2 mx-auto gap-4 mt-4">
+        {#each params as pam, index}
+          <button
+            class="square font-bold text-4xl lg:text-7xl text-center p-4 hover:opacity-50 bg-slate-200"
+            on:click={() => changeParam(index)}
+          >
+            <span class={textColor[pam.value]}>{pamToDisp(pam.value)}</span
+            ></button
+          >
+        {/each}
+      </div>
+      <button class="text-white bg-black p-2 mt-2" on:click={startAudio}
+        >Start Audio</button
+      >
+      <div>
+        <input
+          type="range"
+          name="tempo"
+          max="240"
+          min="10"
+          bind:value={tempo}
+        />
+        <label for="tempo">Tempo {tempo}</label>
+      </div>
+      <div>
+        <input
+          type="range"
+          name="gainVal"
+          max="100"
+          min="0"
+          bind:value={gain}
+        />
+        <label for="gainVal">Gain: {gain}</label>
+      </div>
+    {/if}
+  </body>
 </main>
