@@ -34,7 +34,7 @@
 
   let device: Device;
   let outputNode: GainNode;
-  let params: Parameter[] = [];
+  let params: Parameter[];
   let tempo: number = 60;
   let gain: number = 50;
 
@@ -71,7 +71,7 @@
   };
 
   function changeParam(index: number) {
-    if (params[index].value === 2) {
+    if (params[index].value == 2) {
       params[index].value = 0;
     } else {
       params[index].value = params[index].value + 1;
