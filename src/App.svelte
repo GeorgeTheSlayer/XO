@@ -91,6 +91,8 @@
 
   function changeParam(index: number) {
     console.log("index: ", index);
+    console.log(params[index]);
+    console.log(params);
     if (isSetup) {
       if (params[index].value == 2) {
         params[index].value = 0;
@@ -143,106 +145,113 @@
   }
 </script>
 
-<main class="font-sans text-center">
+<main class="font-sans text-center select-none">
   <body>
-    {#await promise}
-      <p>Setting Up Audio</p>
-    {:then}
-      <h1 class="font-bold text-7xl mt-8">
-        <span class={xClass}>X</span>
-        <span class={oClass}>0</span>
-      </h1>
-      <p class="text-xl opacity-50">A simple drum machine</p>
-      <div class="square grid grid-cols-4 max-w-lg p-2 mx-auto gap-4 mt-4">
-        {#each params as pam, index}
+    <div class="sm:landscape:hidden md:landscape:block">
+      {#await promise}
+        <p>Setting Up Audio</p>
+      {:then}
+        <h1 class="font-bold text-7xl mt-8">
+          <span class={xClass}>X</span>
+          <span class={oClass}>0</span>
+        </h1>
+        <p class="text-xl opacity-50">A simple drum machine</p>
+        <div class="square grid grid-cols-4 max-w-lg p-2 mx-auto gap-4 mt-4">
+          {#each params as pam, index}
+            <button
+              class="square {counter == index
+                ? 'bg-black text-white'
+                : 'bg-slate-200 text-black'} font-bold text-4xl lg:text-7xl text-center p-4 hover:opacity-50"
+              on:click={() => changeParam(index)}
+            >
+              {pamToDisp(pam.value)}
+            </button>
+          {/each}
+        </div>
+        <div class="flex mx-auto w-full max-w-lg justify-evenly">
+          <div class="flex flex-col">
+            <input
+              type="range"
+              name="tempo"
+              max="240"
+              min="10"
+              bind:value={tempo}
+            />
+            <label for="tempo">Tempo {tempo}</label>
+          </div>
+          <div class="flex flex-col">
+            <input
+              type="range"
+              name="gainVal"
+              max="100"
+              min="0"
+              bind:value={gain}
+            />
+            <label for="gainVal">Gain: {gain}</label>
+          </div>
+        </div>
+        {#if !isRunning}
           <button
-            class="square {counter == index
-              ? 'bg-black text-white'
-              : 'bg-slate-200 text-black'} font-bold text-4xl lg:text-7xl text-center p-4 hover:opacity-50"
-            on:click={() => changeParam(index)}
+            class="text-white bg-black p-4 mt-2 max-w-lg"
+            on:click={startAudio}
           >
-            {pamToDisp(pam.value)}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="icon icon-tabler icon-tabler-player-play-filled"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              stroke-width="2"
+              stroke="currentColor"
+              fill="none"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path
+                d="M6 4v16a1 1 0 0 0 1.524 .852l13 -8a1 1 0 0 0 0 -1.704l-13 -8a1 1 0 0 0 -1.524 .852z"
+                stroke-width="0"
+                fill="currentColor"
+              />
+            </svg>
           </button>
-        {/each}
-      </div>
-      <div class="flex mx-auto w-full max-w-lg justify-evenly">
-        <div class="flex flex-col">
-          <input
-            type="range"
-            name="tempo"
-            max="240"
-            min="10"
-            bind:value={tempo}
-          />
-          <label for="tempo">Tempo {tempo}</label>
-        </div>
-        <div class="flex flex-col">
-          <input
-            type="range"
-            name="gainVal"
-            max="100"
-            min="0"
-            bind:value={gain}
-          />
-          <label for="gainVal">Gain: {gain}</label>
-        </div>
-      </div>
-      {#if !isRunning}
-        <button
-          class="text-white bg-black p-4 mt-2 max-w-lg"
-          on:click={startAudio}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="icon icon-tabler icon-tabler-player-play-filled"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            stroke-width="2"
-            stroke="currentColor"
-            fill="none"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+        {:else}
+          <button
+            class="text-white bg-black p-4 mt-2 max-w-lg"
+            on:click={startAudio}
           >
-            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-            <path
-              d="M6 4v16a1 1 0 0 0 1.524 .852l13 -8a1 1 0 0 0 0 -1.704l-13 -8a1 1 0 0 0 -1.524 .852z"
-              stroke-width="0"
-              fill="currentColor"
-            />
-          </svg>
-        </button>
-      {:else}
-        <button
-          class="text-white bg-black p-4 mt-2 max-w-lg"
-          on:click={startAudio}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="icon icon-tabler icon-tabler-player-pause-filled"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            stroke-width="2"
-            stroke="currentColor"
-            fill="none"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-            <path
-              d="M9 4h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h2a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2z"
-              stroke-width="0"
-              fill="currentColor"
-            />
-            <path
-              d="M17 4h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h2a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2z"
-              stroke-width="0"
-              fill="currentColor"
-            />
-          </svg>
-        </button>
-      {/if}
-    {/await}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="icon icon-tabler icon-tabler-player-pause-filled"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              stroke-width="2"
+              stroke="currentColor"
+              fill="none"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path
+                d="M9 4h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h2a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2z"
+                stroke-width="0"
+                fill="currentColor"
+              />
+              <path
+                d="M17 4h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h2a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2z"
+                stroke-width="0"
+                fill="currentColor"
+              />
+            </svg>
+          </button>
+        {/if}
+      {/await}
+    </div>
+    <h1
+      class="font-bold text-7xl mt-8 h-full w-full p-4 sm:block portrait:hidden md:hidden"
+    >
+      Please Rotate Device
+    </h1>
   </body>
 </main>
