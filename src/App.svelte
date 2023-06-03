@@ -90,6 +90,7 @@
   };
 
   function changeParam(index: number) {
+    console.log("index: ", index);
     if (isSetup) {
       if (params[index].value == 2) {
         params[index].value = 0;
