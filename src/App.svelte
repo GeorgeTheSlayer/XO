@@ -4,6 +4,7 @@
     TransportEvent,
     TempoEvent,
     TimeNow,
+    type ExternalDataInfo,
     type Device,
     type Parameter,
   } from "@rnbo/js";
@@ -44,12 +45,19 @@
     let devPatch: IPatcher = await rawPatcher.json();
     device = await createDevice({ context: context, patcher: devPatch });
 
-    let presets = devPatch.presets || [];
-    if (presets.length < 1) {
-      console.log("No presets defined");
-    }
+    let dependencies = await fetch("/max/dependencies.json");
+    dependencies = await dependencies.json();
+    const results = await device.loadDataBufferDependencies(dependencies);
+    results.forEach((result) => {
+      if (result.type === "success") {
+        console.log(`Successfully loaded buffer with id ${result.id}`);
+      } else {
+        console.log(
+          `Failed to load buffer with id ${result.id}, ${result.error}`
+        );
+      }
+    });
 
-    device.setPreset(presets[0].preset);
     params = device.parameters;
 
     // Create gain node and connect it to audio output
@@ -68,7 +76,7 @@
   };
 
   let promise = setupAudio();
-  promise.then(() => {
+  promise.then(async () => {
     console.log("Audio setup complete");
     isSetup = true;
   });
@@ -90,9 +98,6 @@
   };
 
   function changeParam(index: number) {
-    console.log("index: ", index);
-    console.log(params[index]);
-    console.log(params);
     if (isSetup) {
       if (params[index].value == 2) {
         params[index].value = 0;
@@ -155,7 +160,7 @@
           <span class={xClass}>X</span>
           <span class={oClass}>0</span>
         </h1>
-        <p class="text-xl opacity-50">A simple drum machine</p>
+        <p class="text-xl opacity-50">Press Play and Tap the Pads</p>
         <div class="square grid grid-cols-4 max-w-lg p-2 mx-auto gap-4 mt-4">
           {#each params as pam, index}
             <button
@@ -173,8 +178,8 @@
             <input
               type="range"
               name="tempo"
-              max="240"
-              min="10"
+              max="160"
+              min="40"
               bind:value={tempo}
             />
             <label for="tempo">Tempo {tempo}</label>
